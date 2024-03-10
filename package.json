@@ -14,8 +14,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "vscode-smart-path-copy.helloWorld",
-        "title": "Hello World"
+        "command": "vscode-smart-path-copy.run",
+        "title": "Smart Path Copy"
       }
     ]
   },
