@@ -2,7 +2,12 @@
   "name": "vscode-smart-path-copy",
   "displayName": "vscode-smart-path-copy",
   "description": "",
-  "version": "0.0.2",
+  "version": "0.0.3",
+  "publisher": "santi-h",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:santi-h/vscode-smart-path-copy.git"
+  },
   "engines": {
     "vscode": "^1.86.0"
   },
