@@ -7,10 +7,20 @@ import { dirname, relative } from 'path';
 // TODO: make rules configurable options
 const rules = [
   ['_spec\\.rb$', 'rspec $ruby_filepath:$line_number'],
-  ['db\/migrate\/(\\d{14})_\\w+\\.rb$', 'rake db:migrate:up VERSION=$1'],
+  ['db\/migrate\/(\\d{14})_\\w+\\.rb$', 'rake db:migrate:down VERSION=$1'],
+  ['\\btests\/.*\/(\\w+\\.py)$', 'pytest -k $1'],
+  ['', '$rel_filepath'],
 ]
 
 const keywords: Record<string, (activeTextEditor: vscode.TextEditor) => string> = {
+  'rel_filepath': (activeTextEditor: vscode.TextEditor): string => {
+    const activeFilepath = activeTextEditor.document.uri.fsPath;
+    const workspaceFolder = vscode.workspace.getWorkspaceFolder(activeTextEditor.document.uri);
+    if (!workspaceFolder) {
+      return activeFilepath;
+    }
+    return path.relative(workspaceFolder.uri.fsPath, activeFilepath);
+  },
   'line_number': (activeTextEditor: vscode.TextEditor): string => {
     return `${activeTextEditor.selection.end.line + 1}`;
   },
@@ -76,6 +86,7 @@ async function run() {
 
       vscode.env.clipboard.writeText(command);
       vscode.window.showInformationMessage(command);
+      return;
     }
   }
 }

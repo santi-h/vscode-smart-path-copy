@@ -2,6 +2,16 @@
 
 Copies a command depending on the type of file that is active.
 
+Trigger it with a shortcut. For example:
+
+```json
+{
+  "key": "shift+cmd+3",
+  "command": "vscode-smart-path-copy.run",
+  "when": "editorTextFocus"
+}
+```
+
 ## Packaging
 
 Run the following to create the .vsix file:
