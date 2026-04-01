@@ -1,6 +1,8 @@
-# vscode-copy-github-link README
+# vscode-smart-path-copy
 
 Copies a command depending on the type of file that is active.
+
+![gif](/docs/vscode-smart-path-copy.gif)
 
 Trigger it with a shortcut. For example:
 
@@ -11,6 +13,8 @@ Trigger it with a shortcut. For example:
   "when": "editorTextFocus"
 }
 ```
+
+[Marketplace link](https://marketplace.visualstudio.com/items?itemName=santi-h.vscode-smart-path-copy)
 
 ## Packaging
 
