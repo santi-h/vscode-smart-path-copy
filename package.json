@@ -2,7 +2,7 @@
   "name": "vscode-smart-path-copy",
   "displayName": "vscode-smart-path-copy",
   "description": "",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "publisher": "santi-h",
   "repository": {
     "type": "git",
@@ -19,10 +19,52 @@
   "contributes": {
     "commands": [
       {
-        "command": "vscode-smart-path-copy.run",
+        "command": "smartPathCopy.run",
         "title": "Smart Path Copy"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Smart Path Copy",
+      "properties": {
+        "smartPathCopy.rules": {
+          "type": "array",
+          "default": [
+            {
+              "pattern": "_spec\\.rb$",
+              "command": "rspec $ruby_filepath:$line_number"
+            },
+            {
+              "pattern": "db/migrate/(\\d{14})_\\w+\\.rb$",
+              "command": "rake db:migrate:down VERSION=$1"
+            },
+            {
+              "pattern": "\\btests/.*/(\\w+\\.py)$",
+              "command": "pytest -k $1"
+            },
+            {
+              "pattern": "",
+              "command": "$rel_filepath"
+            }
+          ],
+          "description": "List of path-matching rules. Each rule has a regex pattern and the command to generate when the path matches. Rules checked in order.",
+          "items": {
+            "type": "object",
+            "required": ["pattern", "command"],
+            "properties": {
+              "pattern": {
+                "type": "string",
+                "description": "Regular expression to match against the file path."
+              },
+              "command": {
+                "type": "string",
+                "description": "Command template to produce when the pattern matches."
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

@@ -9,26 +9,34 @@ Trigger it with a shortcut. For example:
 ```json
 {
   "key": "shift+cmd+3",
-  "command": "vscode-smart-path-copy.run",
+  "command": "smartPathCopy.run",
   "when": "editorTextFocus"
 }
 ```
 
-[Marketplace link](https://marketplace.visualstudio.com/items?itemName=santi-h.vscode-smart-path-copy)
+The rules for what command is copied in what files is a configuration. You may change this configuration via something like this:
 
-## Packaging
-
-Run the following to create the .vsix file:
-
-```shell
-nvm use `cat .node-version` && \
-npm install && \
-npm run compile && \
-vsce package
+```json
+"smartPathCopy.rules": [
+  {
+    "pattern": "_spec\\.rb$",
+    "command": "rspec $ruby_filepath:$line_number"
+  },
+  {
+    "pattern": "db/migrate/(\\d{14})_\\w+\\.rb$",
+    "command": "rake db:migrate:down VERSION=$1"
+  },
+  {
+    "pattern": "\\btests/.*/(\\w+\\.py)$",
+    "command": "pytest -k $1"
+  },
+  {
+    "pattern": "",
+    "command": "$rel_filepath"
+  }
+]
 ```
 
-This command assumes that you installed `vsce`, which can be done with `npm install -g @vscode/vsce`
+The patterns are checked in order, from top to bottom, and the first match is the only one used.
 
-## Installing
-
-Once packaged, go to "Extensions" in VSCode, then "Install from VSIX..." and load the packaged file.
+Install it via the [marketplace](https://marketplace.visualstudio.com/items?itemName=santi-h.vscode-smart-path-copy).
