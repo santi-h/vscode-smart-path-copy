@@ -1,4 +1,4 @@
-# vscode-smart-path-copy
+# Smart Path Copy
 
 Copies a command depending on the type of file that is active.
 

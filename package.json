@@ -2,7 +2,7 @@
   "name": "vscode-smart-path-copy",
   "displayName": "Smart Path Copy",
   "description": "Copy a command based on its path",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "publisher": "santi-h",
   "repository": {
     "type": "git",
@@ -26,6 +26,12 @@
     "configuration": {
       "title": "Smart Path Copy",
       "properties": {
+        "smartPathCopy.pathFormat": {
+          "type": "string",
+          "enum": ["Windows", "POSIX", "Auto"],
+          "default": "Auto",
+          "description": "Determines the path format to use when generating commands. 'Windows' for backslashes, 'POSIX' for forward slashes, 'Auto' to use the system default."
+        },
         "smartPathCopy.rules": {
           "type": "array",
           "default": [
