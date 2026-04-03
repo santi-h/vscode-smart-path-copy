@@ -4,13 +4,14 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { dirname, relative } from 'path';
 
-// TODO: make rules configurable options
-const rules = [
-  ['_spec\\.rb$', 'rspec $ruby_filepath:$line_number'],
-  ['db\/migrate\/(\\d{14})_\\w+\\.rb$', 'rake db:migrate:down VERSION=$1'],
-  ['\\btests\/.*\/(\\w+\\.py)$', 'pytest -k $1'],
-  ['', '$rel_filepath'],
-]
+type Rule = {
+  pattern: string;
+  command: string;
+}
+
+function getRules(): Rule[] {
+  return vscode.workspace.getConfiguration().get<Rule[]>("smartPathCopy.rules", []);
+}
 
 const keywords: Record<string, (activeTextEditor: vscode.TextEditor) => string> = {
   'rel_filepath': (activeTextEditor: vscode.TextEditor): string => {
@@ -58,7 +59,7 @@ const keywords: Record<string, (activeTextEditor: vscode.TextEditor) => string> 
 }
 
 export function activate(context: vscode.ExtensionContext) {
-  let disposable = vscode.commands.registerCommand('vscode-smart-path-copy.run', run);
+  let disposable = vscode.commands.registerCommand('smartPathCopy.run', run);
   context.subscriptions.push(disposable);
 }
 
@@ -73,11 +74,11 @@ async function run() {
 
   const activeFilepath = activeTextEditor.document.uri.fsPath;
 
-  for (const [pattern, template] of rules) {
-    const match = activeFilepath.match(new RegExp(pattern));
+  for (const rule of getRules()) {
+    const match = activeFilepath.match(new RegExp(rule.pattern));
 
     if (match) {
-      const command = template.replace(/\$(\w+)/g, (_, keyword) => {
+      const command = rule.command.replace(/\$(\w+)/g, (_, keyword) => {
         if (/^\d+$/.test(keyword)) {
           return match[parseInt(keyword)] ?? '';
         }
