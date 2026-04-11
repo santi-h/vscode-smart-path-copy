@@ -13,14 +13,31 @@ function getRules(): Rule[] {
   return vscode.workspace.getConfiguration().get<Rule[]>("smartPathCopy.rules", []);
 }
 
+function getPathFormat(): 'Windows' | 'POSIX' | 'Auto' {
+  return vscode.workspace.getConfiguration().get<'Windows' | 'POSIX' | 'Auto'>('smartPathCopy.pathFormat', 'Auto');
+}
+
+function formatPath(filepath: string): string {
+  const format = getPathFormat();
+
+  if (format === 'Auto') {
+    return filepath;
+  }
+  if (format === 'Windows') {
+    return filepath.replaceAll('/', '\\');
+  }
+  // POSIX
+  return filepath.replaceAll('\\', '/');
+}
+
 const keywords: Record<string, (activeTextEditor: vscode.TextEditor) => string> = {
   'rel_filepath': (activeTextEditor: vscode.TextEditor): string => {
     const activeFilepath = activeTextEditor.document.uri.fsPath;
     const workspaceFolder = vscode.workspace.getWorkspaceFolder(activeTextEditor.document.uri);
     if (!workspaceFolder) {
-      return activeFilepath;
+      return formatPath(activeFilepath)
     }
-    return path.relative(workspaceFolder.uri.fsPath, activeFilepath);
+    return formatPath(path.relative(workspaceFolder.uri.fsPath, activeFilepath));
   },
   'line_number': (activeTextEditor: vscode.TextEditor): string => {
     return `${activeTextEditor.selection.end.line + 1}`;
@@ -30,7 +47,7 @@ const keywords: Record<string, (activeTextEditor: vscode.TextEditor) => string> 
     const rootDir = vscode.workspace.getWorkspaceFolder(activeTextEditor.document.uri)?.uri.path;
 
     if (!rootDir) {
-      return activeFilepath;
+      return formatPath(activeFilepath)
     }
 
     let dir = activeFilepath;
@@ -44,7 +61,7 @@ const keywords: Record<string, (activeTextEditor: vscode.TextEditor) => string> 
       const gemfileLockPath = path.join(dir, 'Gemfile.lock');
 
       if (fs.existsSync(gemfilePath) || fs.existsSync(gemfileLockPath)) {
-        return relative(dir, activeFilepath);
+        return formatPath(relative(dir, activeFilepath));
       }
 
       if (dir === rootDir || dir.length <= rootDir.length ) {
@@ -54,7 +71,7 @@ const keywords: Record<string, (activeTextEditor: vscode.TextEditor) => string> 
       dir = path.dirname(dir);
     }
 
-    return vscode.workspace.asRelativePath(activeFilepath, false);
+    return formatPath(vscode.workspace.asRelativePath(activeFilepath, false));
   },
 }
 
